@@ -16,6 +16,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name="com.inni.im.service.IMService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":im">
+            <intent-filter>
+                <action android:name="com.server.IMService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

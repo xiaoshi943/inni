@@ -5,5 +5,5 @@ package com.inni.im.protocol;
  */
 
 public interface IDispatcher {
-    void dispatch();
+    void dispatch(String msg);
 }
