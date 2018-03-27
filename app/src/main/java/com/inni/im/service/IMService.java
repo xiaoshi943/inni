@@ -12,21 +12,22 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.inni.im.aidl.IIMServer;
 import com.inni.im.aidl.IMEntry;
+import com.inni.im.protocol.IDispatcher;
 import com.inni.im.protocol.impl.ConnectorImpl;
-
-import org.json.JSONStringer;
+import com.inni.im.protocol.impl.Dispatcher;
 
 /**
  * Created by shi on 2018/3/26.
  */
 
-public class IMService extends Service {
+public class IMService extends Service{
     private Binder binder;
+    private ConnectorImpl mConnector;
     @Override
     public void onCreate() {
         super.onCreate();
-
         binder = new IMServerImpl();
+        mConnector = new ConnectorImpl(new Dispatcher(getApplication()));
     }
 
     @Nullable
@@ -40,8 +41,13 @@ public class IMService extends Service {
         public void send(IMEntry entry) throws RemoteException {
 
             String json = JSONObject.toJSONString(entry);
+           //mConnector.send(json);
+
+            //=====测试=============================
             Log.e("pppp",json);
-           // ConnectorImpl.getIntance().send(entry);
+            Intent intent = new Intent("com.inni.IM_MESSAGE");
+            intent.putExtra("imMsg",json);
+            getApplication().sendBroadcast(intent);
         }
     }
 }

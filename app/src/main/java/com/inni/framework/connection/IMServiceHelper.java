@@ -1,6 +1,5 @@
 package com.inni.framework.connection;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,28 +7,40 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import com.inni.framework.connection.bean.MsgEntry;
+import com.inni.bean.MsgEntry;
 import com.inni.im.aidl.Header;
 import com.inni.im.aidl.IIMServer;
 import com.inni.im.aidl.IMEntry;
 import com.inni.im.service.IMService;
 
 /**
- * Created by qiang on 2018/3/26.
+ * 连接IM Service的帮助类，且负责发送IM消息
+ * Created by shi on 2018/3/26.
  */
 
-public class IMServer {
-    private Activity mContext;
+public class IMServiceHelper {
+    private Context mContext;
     private IIMServer mIMServer;
     private ServiceConnection connection;
 
-    public IMServer(Activity context){
+    private static IMServiceHelper helper;
+
+    private IMServiceHelper(){
+    }
+
+    public static IMServiceHelper getInstance(){
+        if(helper == null){
+            helper = new IMServiceHelper();
+        }
+        return helper;
+    }
+    public void init(Context context){
         mContext = context;
-        init();
+        bindService();
     }
 
     //获取远程服务代理对象
-    private void init() {
+    private void bindService() {
         connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {

@@ -1,37 +1,25 @@
-package com.inni;
+package com.inni.iminni;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.inni.framework.connection.IMServer;
-import com.inni.framework.connection.bean.MsgEntry;
-import com.inni.im.aidl.IIMServer;
-import com.inni.im.aidl.IMEntry;
-import com.inni.im.service.IMService;
+import com.inni.R;
+import com.inni.framework.connection.IMServiceHelper;
+import com.inni.bean.MsgEntry;
 
 public class HomeActivity extends AppCompatActivity {
     private EditText editText;
     private TextView sendBtn;
-
-    private IMServer mIMServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         initView();
-
-        mIMServer = new IMServer(this);
+        IMServiceHelper.getInstance().init(this);
     }
 
     private void initView(){
@@ -44,7 +32,7 @@ public class HomeActivity extends AppCompatActivity {
                 MsgEntry msgE = new MsgEntry();
                 msgE.setInniID("1000");
                 msgE.setMsg(msg);
-                mIMServer.send(msgE);
+                IMServiceHelper.getInstance().send(msgE);
             }
         });
     }
@@ -52,6 +40,5 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mIMServer.unBindSerivce();
     }
 }

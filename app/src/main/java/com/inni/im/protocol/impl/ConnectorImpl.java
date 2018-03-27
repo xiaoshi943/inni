@@ -1,12 +1,16 @@
 package com.inni.im.protocol.impl;
 
+import android.util.Log;
+
 import com.inni.im.aidl.IMEntry;
 import com.inni.im.protocol.IConnector;
 import com.inni.im.protocol.IDispatcher;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -16,26 +20,17 @@ import java.net.Socket;
  */
 
 public class ConnectorImpl implements IConnector {
-    private static ConnectorImpl connector;
     private Socket mSockect = null;
-    private IDispatcher dispatcher = null;
+    private IDispatcher mDispatcher = null;
 
-    private ConnectorImpl(){
+    public ConnectorImpl(IDispatcher dispatcher){
+        mDispatcher = dispatcher;
         try {
             mSockect = new Socket(ConnectionConfiger.HOST, ConnectionConfiger.PORT);
         }catch (IOException e){
+            e.printStackTrace();
         }
-        dispatcher = new Dispatcher();
-
-        receive();
-    }
-
-    public static ConnectorImpl getIntance(){
-        if(connector == null){
-            connector = new ConnectorImpl();
-        }
-
-        return connector;
+       // receive();
     }
 
     @Override
@@ -49,7 +44,7 @@ public class ConnectorImpl implements IConnector {
 
     @Override
     public void receive() {
-        new Thread(new Reader(mSockect,dispatcher));
+        new Thread(new Reader(mSockect,mDispatcher));
     }
 
     @Override
@@ -64,6 +59,33 @@ public class ConnectorImpl implements IConnector {
             printStream.print(msg);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public class Reader implements Runnable {
+        private Socket socket = null;
+        private IDispatcher dispatcher = null;
+        private BufferedReader bufReader = null;
+
+        public Reader(Socket socket , IDispatcher dispatcher){
+            this.socket = socket;
+            this.dispatcher = dispatcher;
+            try {
+                bufReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        @Override
+        public void run() {
+            String msg = "";
+            try {
+                while ((msg = bufReader.readLine()) != null){
+                    dispatcher.dispatch(msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

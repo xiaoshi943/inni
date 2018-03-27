@@ -1,4 +1,4 @@
-package com.inni.framework.connection.bean;
+package com.inni.bean;
 
 /**
  * Created by qiang on 2018/3/26.
